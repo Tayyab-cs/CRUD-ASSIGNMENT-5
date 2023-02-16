@@ -1,19 +1,40 @@
 const User = require('../database/models/userSchema.js');
+const validation = require('../middlewares/userValidation.js');
 
+// const createUser = async (req, res) => {
+//     const {name, email, password, date} = req.body;
+//     const userData = new User({
+//         name,
+//         email,
+//         password,
+//         date
+//     });
+
+//     try {
+//         const savedData = await userData.save();
+//         res.status(200).send(savedData);
+//     } catch (err) {
+//         res.status(400).send({ message: err.message });
+//     }
+// }
+
+/* ........................Validating req.body before saving.................... */
 const createUser = async (req, res) => {
-    const {name, email, password, date} = req.body;
+    const { error, value } = validation.userSchemaValidation.validate(req.body);
+    const {name, email, password, date} = value;
     const userData = new User({
         name,
         email,
         password,
         date
     });
-
-    try {
+    
+    if(!error) {
+        console.log(userData);
         const savedData = await userData.save();
         res.status(200).send(savedData);
-    } catch (err) {
-        res.status(400).send({ message: err.message });
+    } else {
+        res.status(400).send({ message: error.message });
     }
 }
 
